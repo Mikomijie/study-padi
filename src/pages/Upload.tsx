@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { 
@@ -12,11 +12,14 @@ import {
   File,
   FolderOpen,
   Sparkles,
-  BookOpen
+  BookOpen,
+  MessageSquare,
+  Send
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { Progress } from "@/components/ui/progress";
+import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
@@ -41,6 +44,12 @@ interface AnalysisResult {
   questionsGenerated: number;
 }
 
+interface ChatMessage {
+  id: string;
+  role: "user" | "assistant";
+  content: string;
+}
+
 export default function UploadPage() {
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -50,6 +59,12 @@ export default function UploadPage() {
   const [analysisProgress, setAnalysisProgress] = useState(0);
   const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null);
   const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set());
+  
+  // Q&A Chat state
+  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
+  const [chatInput, setChatInput] = useState("");
+  const [isAskingQuestion, setIsAskingQuestion] = useState(false);
+  const chatEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -195,6 +210,56 @@ export default function UploadPage() {
       title: "Analysis complete!",
       description: `${result.sections.length} sections and ${result.totalChunks} chunks created.`,
     });
+  };
+
+  // Scroll chat to bottom when new messages arrive
+  useEffect(() => {
+    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [chatMessages]);
+
+  const handleAskQuestion = async () => {
+    if (!chatInput.trim() || !analysisResult) return;
+    
+    const userMessage: ChatMessage = {
+      id: Date.now().toString(),
+      role: "user",
+      content: chatInput.trim(),
+    };
+    
+    setChatMessages((prev) => [...prev, userMessage]);
+    setChatInput("");
+    setIsAskingQuestion(true);
+    
+    try {
+      // Call the edge function for Q&A
+      const { data, error } = await supabase.functions.invoke("document-qa", {
+        body: {
+          question: userMessage.content,
+          documentTitle: analysisResult.title,
+          sections: analysisResult.sections.map((s) => s.title),
+        },
+      });
+      
+      if (error) throw error;
+      
+      const assistantMessage: ChatMessage = {
+        id: (Date.now() + 1).toString(),
+        role: "assistant",
+        content: data?.answer || "I couldn't find an answer to that question. Please try rephrasing or ask something else about the document.",
+      };
+      
+      setChatMessages((prev) => [...prev, assistantMessage]);
+    } catch (error) {
+      console.error("Q&A error:", error);
+      const errorMessage: ChatMessage = {
+        id: (Date.now() + 1).toString(),
+        role: "assistant",
+        content: "Sorry, I couldn't process your question. Please try again later.",
+      };
+      setChatMessages((prev) => [...prev, errorMessage]);
+    } finally {
+      setIsAskingQuestion(false);
+    }
   };
 
   const toggleSection = (sectionId: string) => {
@@ -415,6 +480,70 @@ export default function UploadPage() {
                       </AnimatePresence>
                     </div>
                   ))}
+                </div>
+              </div>
+
+              {/* Ask Questions Section */}
+              <div className="glass-card p-6 mb-6">
+                <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
+                  <MessageSquare className="w-5 h-5 text-primary" />
+                  Ask Questions About Your Document
+                </h3>
+                
+                {/* Chat Messages */}
+                <div className="max-h-64 overflow-y-auto mb-4 space-y-3">
+                  {chatMessages.length === 0 ? (
+                    <p className="text-sm text-muted-foreground text-center py-4">
+                      Ask any question about your uploaded document and AI will answer based on its content.
+                    </p>
+                  ) : (
+                    chatMessages.map((msg) => (
+                      <div
+                        key={msg.id}
+                        className={cn(
+                          "p-3 rounded-lg text-sm",
+                          msg.role === "user"
+                            ? "bg-primary/10 ml-8"
+                            : "bg-muted/50 mr-8"
+                        )}
+                      >
+                        <p className="font-medium text-xs mb-1 text-muted-foreground">
+                          {msg.role === "user" ? "You" : "AI Assistant"}
+                        </p>
+                        <p>{msg.content}</p>
+                      </div>
+                    ))
+                  )}
+                  {isAskingQuestion && (
+                    <div className="bg-muted/50 mr-8 p-3 rounded-lg">
+                      <p className="font-medium text-xs mb-1 text-muted-foreground">AI Assistant</p>
+                      <div className="flex items-center gap-2">
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        <span className="text-sm">Thinking...</span>
+                      </div>
+                    </div>
+                  )}
+                  <div ref={chatEndRef} />
+                </div>
+                
+                {/* Chat Input */}
+                <div className="flex gap-2">
+                  <Input
+                    value={chatInput}
+                    onChange={(e) => setChatInput(e.target.value)}
+                    placeholder="Ask a question about this document..."
+                    onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && handleAskQuestion()}
+                    disabled={isAskingQuestion}
+                    className="flex-1"
+                  />
+                  <Button
+                    onClick={handleAskQuestion}
+                    disabled={!chatInput.trim() || isAskingQuestion}
+                    size="icon"
+                    className="gradient-bg-primary"
+                  >
+                    <Send className="w-4 h-4" />
+                  </Button>
                 </div>
               </div>
 
