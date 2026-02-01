@@ -41,73 +41,93 @@ interface Question {
 const mockChunks: Chunk[] = [
   {
     id: "1",
-    content: `Machine learning is a subset of artificial intelligence (AI) that enables computers to learn from data without being explicitly programmed. The fundamental idea is that systems can identify patterns, make decisions, and improve over time through experience.
+    content: `Newton's Laws of Motion form the foundation of classical mechanics. These three laws describe the relationship between the motion of an object and the forces acting upon it.
 
-There are three main types of machine learning: supervised learning, unsupervised learning, and reinforcement learning. Each approach has its own strengths and is suited for different types of problems.
+Sir Isaac Newton published these laws in 1687 in his work "Philosophiæ Naturalis Principia Mathematica." They revolutionized our understanding of physics and remain fundamental to engineering and science today.
 
-In supervised learning, the algorithm is trained on labeled data, meaning each training example is paired with an output label. The goal is to learn a mapping from inputs to outputs that can be used to predict labels for new, unseen data.`,
-    highlightedTerms: ["supervised learning"],
+The laws apply to everyday objects moving at speeds much slower than the speed of light. For very fast objects or very small particles, we need Einstein's relativity or quantum mechanics instead.`,
+    highlightedTerms: ["Newton's Laws of Motion"],
   },
   {
     id: "2",
-    content: `Unsupervised learning, in contrast, works with unlabeled data. The algorithm tries to find hidden patterns or structures in the data without any guidance. Common applications include clustering, dimensionality reduction, and anomaly detection.
+    content: `Newton's First Law (Law of Inertia) states: An object at rest stays at rest, and an object in motion stays in motion with the same speed and direction, unless acted upon by an external force.
 
-Clustering algorithms like K-means and hierarchical clustering are used to group similar data points together. This is useful in customer segmentation, image compression, and many other applications.
+This means objects naturally resist changes to their state of motion. A book on a table won't move unless you push it. A rolling ball would roll forever if there were no friction or air resistance.
 
-Dimensionality reduction techniques like PCA (Principal Component Analysis) help reduce the number of features in a dataset while preserving the most important information.`,
+Inertia is directly related to mass - the more massive an object, the more force is needed to change its motion. This is why it's harder to push a heavy truck than a light bicycle.`,
+    highlightedTerms: ["inertia", "First Law"],
   },
   {
     id: "3",
-    content: `Reinforcement learning is a type of machine learning where an agent learns to make decisions by interacting with an environment. The agent receives rewards or penalties based on its actions and learns to maximize cumulative reward over time.
+    content: `Newton's Second Law states: Force equals mass times acceleration (F = ma). This is the most useful of the three laws for solving physics problems.
 
-Key concepts in reinforcement learning include:
-- Agent: The learner or decision maker
-- Environment: The world the agent interacts with
-- State: The current situation of the agent
-- Action: The choices available to the agent
-- Reward: Feedback from the environment
+The law tells us that:
+- More force means more acceleration
+- More mass means less acceleration for the same force
+- Force and acceleration are in the same direction
 
-Famous examples include AlphaGo, which mastered the game of Go, and robotic systems that learn to walk or manipulate objects.`,
-    highlightedTerms: ["reinforcement learning"],
+For example, if you push a 10 kg box with 20 N of force, it accelerates at 2 m/s². If you push a 20 kg box with the same force, it only accelerates at 1 m/s².`,
+    highlightedTerms: ["F = ma", "Second Law"],
+  },
+  {
+    id: "4",
+    content: `Newton's Third Law states: For every action, there is an equal and opposite reaction.
+
+When you push against a wall, the wall pushes back on you with equal force. When you jump, you push down on the Earth and the Earth pushes you up. When a rocket expels gas downward, the gas pushes the rocket upward.
+
+These action-reaction pairs always act on different objects. They're equal in magnitude, opposite in direction, and occur simultaneously. Understanding this helps explain how rockets work in the vacuum of space!`,
+    highlightedTerms: ["Third Law", "action-reaction"],
   },
 ];
 
 const mockQuestions: Question[] = [
   {
     id: "1",
-    question: "What is the main difference between supervised and unsupervised learning?",
+    question: "What does Newton's First Law describe?",
     options: [
-      "Supervised learning is faster",
-      "Supervised learning uses labeled data, unsupervised uses unlabeled data",
-      "Unsupervised learning requires more computing power",
-      "There is no difference",
+      "Force equals mass times acceleration",
+      "Objects resist changes to their state of motion (inertia)",
+      "Every action has an equal and opposite reaction",
+      "Energy cannot be created or destroyed",
     ],
     correctAnswer: 1,
-    explanation: "In supervised learning, the algorithm is trained on labeled data where each example has an output label. Unsupervised learning works with unlabeled data to find patterns.",
+    explanation: "Newton's First Law, also called the Law of Inertia, states that objects at rest stay at rest and objects in motion stay in motion unless acted upon by an external force.",
   },
   {
     id: "2",
-    question: "Which algorithm is commonly used for clustering in unsupervised learning?",
+    question: "According to F = ma, if you double the force applied to an object, what happens to its acceleration?",
     options: [
-      "Linear Regression",
-      "K-means",
-      "Neural Networks",
-      "Decision Trees",
+      "It stays the same",
+      "It doubles",
+      "It halves",
+      "It quadruples",
     ],
     correctAnswer: 1,
-    explanation: "K-means is a popular clustering algorithm used in unsupervised learning to group similar data points together.",
+    explanation: "From F = ma, if mass stays constant and force doubles, acceleration must also double to maintain the equation's balance.",
   },
   {
     id: "3",
-    question: "In reinforcement learning, what does the agent try to maximize?",
+    question: "When you push against a wall, what does Newton's Third Law tell us?",
     options: [
-      "Accuracy",
-      "Speed",
-      "Cumulative reward",
-      "Data size",
+      "The wall doesn't push back",
+      "The wall pushes back with less force",
+      "The wall pushes back with equal force in the opposite direction",
+      "The wall absorbs all the force",
     ],
     correctAnswer: 2,
-    explanation: "In reinforcement learning, the agent learns to make decisions by maximizing cumulative reward over time through interaction with the environment.",
+    explanation: "Newton's Third Law states that for every action there's an equal and opposite reaction. When you push on the wall, the wall pushes back on you with the same magnitude of force.",
+  },
+  {
+    id: "4",
+    question: "Why is it harder to push a heavy truck than a light bicycle?",
+    options: [
+      "The truck has more friction",
+      "The truck has more inertia due to its greater mass",
+      "The bicycle has wheels",
+      "The truck is taller",
+    ],
+    correctAnswer: 1,
+    explanation: "More massive objects have greater inertia, meaning they resist changes to their motion more strongly. According to F = ma, more mass means you need more force to achieve the same acceleration.",
   },
 ];
 
@@ -454,7 +474,7 @@ export default function Learn() {
             <>
               <div className="flex items-center justify-between mb-2">
                 <h2 className="font-semibold">
-                  {phase === "study" ? "Introduction to Machine Learning" : "Section Quiz"}
+                  {phase === "study" ? "Newton's Laws of Motion" : "Section Quiz"}
                 </h2>
                 <span className="text-sm text-muted-foreground">
                   {phase === "study" 

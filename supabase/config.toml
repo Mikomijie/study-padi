@@ -1,1 +1,4 @@
 project_id = "rfgremkrvletqcjoizwg"
+
+[functions.document-qa]
+verify_jwt = false
