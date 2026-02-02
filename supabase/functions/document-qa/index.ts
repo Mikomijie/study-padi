@@ -32,7 +32,7 @@ serve(async (req) => {
       );
     }
 
-    const systemPrompt = `You are a helpful study assistant for an adaptive learning platform called MindForge. 
+    const systemPrompt = `You are a helpful study assistant for an adaptive learning platform called StudyPadi. 
 You help students understand documents they've uploaded by answering their questions.
 
 The student has uploaded a document titled: "${documentTitle || 'Untitled Document'}"
