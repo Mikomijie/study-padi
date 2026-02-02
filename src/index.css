@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-/* MindForge Design System - Natural Academic Theme */
+/* StudyPadi Design System - Natural Academic Theme */
 
 @layer base {
   :root {
@@ -37,7 +37,7 @@
 
     --radius: 0.5rem;
 
-    /* Custom MindForge tokens */
+    /* Custom StudyPadi tokens */
     --success: 113 37% 61%; /* #7BC96F - Natural Green */
     --success-foreground: 0 0% 100%;
     
@@ -99,7 +99,7 @@
     --input: 156 25% 18%;
     --ring: 156 45% 59%;
 
-    /* Custom MindForge tokens - Dark */
+    /* Custom StudyPadi tokens - Dark */
     --success: 113 37% 61%;
     --success-foreground: 156 33% 8%;
     

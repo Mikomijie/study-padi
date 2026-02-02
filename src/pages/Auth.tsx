@@ -101,7 +101,7 @@ export default function Auth() {
         if (error) throw error;
         toast({
           title: "Account created!",
-          description: "Welcome to MindForge! You can now start learning.",
+          description: "Welcome to StudyPadi! You can now start learning.",
         });
       }
     } catch (error: any) {
@@ -147,7 +147,7 @@ export default function Auth() {
             <BookOpen className="w-7 h-7 sm:w-8 sm:h-8 text-primary-foreground" />
           </motion.div>
           <h1 className="font-display text-2xl sm:text-3xl font-bold gradient-text-primary">
-            MindForge
+            StudyPadi
           </h1>
           <p className="text-muted-foreground mt-2 text-sm sm:text-base">
             {isLogin ? "Welcome back! Sign in to continue." : "Create your account to start learning."}

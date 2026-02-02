@@ -69,7 +69,7 @@ export function Navbar({ user, onLogout }: NavbarProps) {
                 <BookOpen className="w-5 h-5 text-primary-foreground" />
               </div>
               <span className="font-display font-bold text-xl gradient-text-primary hidden sm:block">
-                MindForge
+                StudyPadi
               </span>
             </Link>
 

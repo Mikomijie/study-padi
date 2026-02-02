@@ -93,7 +93,7 @@ export default function Landing() {
             transition={{ delay: 0.2 }}
             className="font-display text-4xl sm:text-5xl md:text-7xl font-bold mb-4 sm:mb-6"
           >
-            <span className="gradient-text-primary">MindForge</span>
+            <span className="gradient-text-primary">StudyPadi</span>
           </motion.h1>
 
           <motion.p
@@ -194,7 +194,7 @@ export default function Landing() {
               <span className="gradient-text-primary">master anything</span>
             </h2>
             <p className="text-muted-foreground text-base sm:text-lg max-w-2xl mx-auto px-4">
-              MindForge combines AI-powered document analysis with gamified learning 
+              StudyPadi combines AI-powered document analysis with gamified learning 
               to help you retain information faster and longer.
             </p>
           </motion.div>
@@ -238,7 +238,7 @@ export default function Landing() {
               Ready to transform how you learn?
             </h2>
             <p className="text-muted-foreground mb-6 sm:mb-8 max-w-xl mx-auto text-sm sm:text-base">
-              Join thousands of learners who are using MindForge to study smarter, 
+              Join thousands of learners who are using StudyPadi to study smarter, 
               not harder. Your journey to mastery starts here.
             </p>
             <Button
@@ -260,10 +260,10 @@ export default function Landing() {
             <div className="w-8 h-8 rounded-lg gradient-bg-primary flex items-center justify-center">
               <BookOpen className="w-4 h-4 text-primary-foreground" />
             </div>
-            <span className="font-display font-bold">MindForge</span>
+            <span className="font-display font-bold">StudyPadi</span>
           </div>
           <p className="text-sm text-muted-foreground text-center sm:text-right">
-            © 2026 MindForge. Built with ❤️ for learners.
+            © 2026 StudyPadi. Built with ❤️ for learners.
           </p>
         </div>
       </footer>
