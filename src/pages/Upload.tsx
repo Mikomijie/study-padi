@@ -14,7 +14,8 @@ import {
   Sparkles,
   BookOpen,
   MessageSquare,
-  Send
+  Send,
+  AlertCircle
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AppLayout } from "@/components/layout/AppLayout";
@@ -275,27 +276,27 @@ export default function UploadPage() {
   };
 
   const getFileIcon = () => {
-    if (!file) return <UploadIcon className="w-12 h-12 text-primary" />;
+    if (!file) return <UploadIcon className="w-10 h-10 sm:w-12 sm:h-12 text-primary" />;
     
     if (file.type === "application/pdf") {
-      return <FileText className="w-12 h-12 text-red-400" />;
+      return <FileText className="w-10 h-10 sm:w-12 sm:h-12 text-destructive" />;
     }
-    return <File className="w-12 h-12 text-blue-400" />;
+    return <File className="w-10 h-10 sm:w-12 sm:h-12 text-primary" />;
   };
 
   return (
     <AppLayout user={mockUser}>
-      <div className="container mx-auto px-4 py-8 max-w-4xl">
+      <div className="container mx-auto px-4 py-6 sm:py-8 max-w-4xl">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-8"
+          className="mb-6 sm:mb-8"
         >
-          <h1 className="font-display text-3xl md:text-4xl font-bold mb-2">
+          <h1 className="font-display text-2xl sm:text-3xl md:text-4xl font-bold mb-2">
             Upload <span className="gradient-text-primary">Study Material</span>
           </h1>
-          <p className="text-muted-foreground">
+          <p className="text-muted-foreground text-sm sm:text-base">
             Upload any document and our AI will break it into digestible learning chunks.
           </p>
         </motion.div>
@@ -319,7 +320,7 @@ export default function UploadPage() {
             {file ? (
               <div className="flex flex-col items-center">
                 {getFileIcon()}
-                <p className="mt-4 font-medium text-lg">{file.name}</p>
+                <p className="mt-4 font-medium text-base sm:text-lg text-center break-all px-4">{file.name}</p>
                 <p className="text-sm text-muted-foreground">
                   {(file.size / 1024 / 1024).toFixed(2)} MB
                 </p>
@@ -330,7 +331,7 @@ export default function UploadPage() {
                     setFile(null);
                     setAnalysisResult(null);
                   }}
-                  className="mt-4 text-muted-foreground hover:text-destructive"
+                  className="mt-4 text-muted-foreground hover:text-destructive min-h-[44px]"
                 >
                   <X className="w-4 h-4 mr-2" />
                   Remove file
@@ -338,13 +339,13 @@ export default function UploadPage() {
               </div>
             ) : (
               <div className="flex flex-col items-center">
-                <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mb-4 animate-pulse-glow">
-                  <UploadIcon className="w-10 h-10 text-primary" />
+                <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-primary/10 flex items-center justify-center mb-4 animate-pulse-glow">
+                  <UploadIcon className="w-8 h-8 sm:w-10 sm:h-10 text-primary" />
                 </div>
-                <p className="text-lg font-medium mb-2">
+                <p className="text-base sm:text-lg font-medium mb-2 text-center">
                   Drag and drop your file here
                 </p>
-                <p className="text-sm text-muted-foreground mb-4">
+                <p className="text-xs sm:text-sm text-muted-foreground mb-4 text-center px-4">
                   Supports PDF, DOCX, and TXT files up to 10MB
                 </p>
                 <label className="cursor-pointer">
@@ -354,7 +355,7 @@ export default function UploadPage() {
                     onChange={handleFileSelect}
                     className="hidden"
                   />
-                  <Button variant="outline" asChild>
+                  <Button variant="outline" asChild className="min-h-[44px]">
                     <span>
                       <UploadIcon className="w-4 h-4 mr-2" />
                       Browse Files
@@ -376,7 +377,7 @@ export default function UploadPage() {
             <Button
               onClick={simulateAnalysis}
               disabled={isAnalyzing}
-              className="w-full h-14 gradient-bg-primary text-primary-foreground text-lg glow-primary"
+              className="w-full h-12 sm:h-14 gradient-bg-primary text-primary-foreground text-base sm:text-lg glow-primary"
             >
               {isAnalyzing ? (
                 <>
@@ -394,7 +395,7 @@ export default function UploadPage() {
             {isAnalyzing && (
               <div className="mt-4">
                 <Progress value={analysisProgress} className="h-2" />
-                <p className="text-sm text-muted-foreground text-center mt-2">
+                <p className="text-xs sm:text-sm text-muted-foreground text-center mt-2">
                   Extracting content and generating quiz questions...
                 </p>
               </div>
@@ -409,17 +410,17 @@ export default function UploadPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
-              className="mt-8"
+              className="mt-6 sm:mt-8 space-y-4 sm:space-y-6"
             >
               {/* Success Header */}
-              <div className="glass-card p-6 mb-6 border-success/30">
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-full bg-success/20 flex items-center justify-center">
-                    <CheckCircle className="w-6 h-6 text-success" />
+              <div className="glass-card p-4 sm:p-6 border-success/30">
+                <div className="flex items-center gap-3 sm:gap-4">
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-success/20 flex items-center justify-center flex-shrink-0">
+                    <CheckCircle className="w-5 h-5 sm:w-6 sm:h-6 text-success" />
                   </div>
-                  <div>
-                    <h2 className="font-semibold text-xl">{analysisResult.title}</h2>
-                    <p className="text-sm text-muted-foreground">
+                  <div className="min-w-0">
+                    <h2 className="font-semibold text-lg sm:text-xl truncate">{analysisResult.title}</h2>
+                    <p className="text-xs sm:text-sm text-muted-foreground">
                       {analysisResult.sections.length} sections • {analysisResult.totalChunks} chunks • {analysisResult.questionsGenerated} questions
                     </p>
                   </div>
@@ -427,8 +428,8 @@ export default function UploadPage() {
               </div>
 
               {/* Document Structure */}
-              <div className="glass-card p-6 mb-6">
-                <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
+              <div className="glass-card p-4 sm:p-6">
+                <h3 className="font-semibold text-base sm:text-lg mb-4 flex items-center gap-2">
                   <FolderOpen className="w-5 h-5 text-primary" />
                   Document Structure
                 </h3>
@@ -438,17 +439,17 @@ export default function UploadPage() {
                     <div key={section.id} className="border border-border/50 rounded-lg overflow-hidden">
                       <button
                         onClick={() => toggleSection(section.id)}
-                        className="w-full flex items-center justify-between p-4 hover:bg-muted/50 transition-colors"
+                        className="w-full flex items-center justify-between p-3 sm:p-4 hover:bg-muted/50 transition-colors min-h-[48px]"
                       >
-                        <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-2 sm:gap-3 min-w-0">
                           {expandedSections.has(section.id) ? (
-                            <ChevronDown className="w-5 h-5 text-primary" />
+                            <ChevronDown className="w-4 h-4 sm:w-5 sm:h-5 text-primary flex-shrink-0" />
                           ) : (
-                            <ChevronRight className="w-5 h-5 text-muted-foreground" />
+                            <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground flex-shrink-0" />
                           )}
-                          <span className="font-medium">{section.title}</span>
+                          <span className="font-medium text-sm sm:text-base truncate">{section.title}</span>
                         </div>
-                        <span className="text-sm text-muted-foreground">
+                        <span className="text-xs sm:text-sm text-muted-foreground flex-shrink-0 ml-2">
                           {section.chunks.length} chunks
                         </span>
                       </button>
@@ -461,13 +462,13 @@ export default function UploadPage() {
                             exit={{ height: 0, opacity: 0 }}
                             className="border-t border-border/50"
                           >
-                            <div className="p-4 pl-12 space-y-2 bg-muted/30">
+                            <div className="p-3 sm:p-4 pl-8 sm:pl-12 space-y-2 bg-muted/30">
                               {section.chunks.map((chunk, index) => (
                                 <div
                                   key={chunk.id}
-                                  className="flex items-center gap-3 text-sm"
+                                  className="flex items-center gap-2 sm:gap-3 text-xs sm:text-sm"
                                 >
-                                  <FileText className="w-4 h-4 text-muted-foreground" />
+                                  <FileText className="w-4 h-4 text-muted-foreground flex-shrink-0" />
                                   <span>Chunk {index + 1}</span>
                                   <span className="text-muted-foreground">
                                     ({chunk.wordCount} words)
@@ -484,18 +485,21 @@ export default function UploadPage() {
               </div>
 
               {/* Ask Questions Section */}
-              <div className="glass-card p-6 mb-6">
-                <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
+              <div className="glass-card p-4 sm:p-6">
+                <h3 className="font-semibold text-base sm:text-lg mb-4 flex items-center gap-2">
                   <MessageSquare className="w-5 h-5 text-primary" />
                   Ask Questions About Your Document
                 </h3>
                 
                 {/* Chat Messages */}
-                <div className="max-h-64 overflow-y-auto mb-4 space-y-3">
+                <div className="max-h-48 sm:max-h-64 overflow-y-auto mb-4 space-y-3">
                   {chatMessages.length === 0 ? (
-                    <p className="text-sm text-muted-foreground text-center py-4">
-                      Ask any question about your uploaded document and AI will answer based on its content.
-                    </p>
+                    <div className="text-center py-4 px-2">
+                      <AlertCircle className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
+                      <p className="text-xs sm:text-sm text-muted-foreground">
+                        Ask any question about your uploaded document and AI will answer based on its content.
+                      </p>
+                    </div>
                   ) : (
                     chatMessages.map((msg) => (
                       <div
@@ -503,23 +507,23 @@ export default function UploadPage() {
                         className={cn(
                           "p-3 rounded-lg text-sm",
                           msg.role === "user"
-                            ? "bg-primary/10 ml-8"
-                            : "bg-muted/50 mr-8"
+                            ? "bg-primary/10 ml-4 sm:ml-8"
+                            : "bg-muted/50 mr-4 sm:mr-8"
                         )}
                       >
                         <p className="font-medium text-xs mb-1 text-muted-foreground">
                           {msg.role === "user" ? "You" : "AI Assistant"}
                         </p>
-                        <p>{msg.content}</p>
+                        <p className="text-xs sm:text-sm">{msg.content}</p>
                       </div>
                     ))
                   )}
                   {isAskingQuestion && (
-                    <div className="bg-muted/50 mr-8 p-3 rounded-lg">
+                    <div className="bg-muted/50 mr-4 sm:mr-8 p-3 rounded-lg">
                       <p className="font-medium text-xs mb-1 text-muted-foreground">AI Assistant</p>
                       <div className="flex items-center gap-2">
                         <Loader2 className="w-4 h-4 animate-spin" />
-                        <span className="text-sm">Thinking...</span>
+                        <span className="text-xs sm:text-sm">Thinking...</span>
                       </div>
                     </div>
                   )}
@@ -534,13 +538,13 @@ export default function UploadPage() {
                     placeholder="Ask a question about this document..."
                     onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && handleAskQuestion()}
                     disabled={isAskingQuestion}
-                    className="flex-1"
+                    className="flex-1 h-11 text-sm"
                   />
                   <Button
                     onClick={handleAskQuestion}
                     disabled={!chatInput.trim() || isAskingQuestion}
                     size="icon"
-                    className="gradient-bg-primary"
+                    className="gradient-bg-primary h-11 w-11 min-h-[44px] min-w-[44px]"
                   >
                     <Send className="w-4 h-4" />
                   </Button>
@@ -550,7 +554,7 @@ export default function UploadPage() {
               {/* Start Learning Button */}
               <Button
                 onClick={() => navigate("/learn")}
-                className="w-full h-14 gradient-bg-primary text-primary-foreground text-lg glow-primary"
+                className="w-full h-12 sm:h-14 gradient-bg-primary text-primary-foreground text-base sm:text-lg glow-primary"
               >
                 <BookOpen className="w-5 h-5 mr-2" />
                 Start Learning

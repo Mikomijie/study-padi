@@ -101,7 +101,7 @@ export default function Auth() {
         if (error) throw error;
         toast({
           title: "Account created!",
-          description: "Please check your email to verify your account.",
+          description: "Welcome to MindForge! You can now start learning.",
         });
       }
     } catch (error: any) {
@@ -127,8 +127,8 @@ export default function Auth() {
     <div className="min-h-screen bg-background flex items-center justify-center p-4 bg-hero-pattern">
       {/* Background effects */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 right-1/4 w-96 h-96 bg-primary/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-1/4 left-1/4 w-96 h-96 bg-accent/10 rounded-full blur-3xl" />
+        <div className="absolute top-1/4 right-1/4 w-48 sm:w-96 h-48 sm:h-96 bg-primary/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-1/4 left-1/4 w-48 sm:w-96 h-48 sm:h-96 bg-accent/10 rounded-full blur-3xl" />
       </div>
 
       <motion.div
@@ -137,19 +137,19 @@ export default function Auth() {
         className="w-full max-w-md relative z-10"
       >
         {/* Logo */}
-        <div className="text-center mb-8">
+        <div className="text-center mb-6 sm:mb-8">
           <motion.div
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             transition={{ type: "spring", stiffness: 200, damping: 15 }}
-            className="inline-flex items-center justify-center w-16 h-16 rounded-2xl gradient-bg-primary glow-primary mb-4"
+            className="inline-flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 rounded-2xl gradient-bg-primary glow-primary mb-4"
           >
-            <BookOpen className="w-8 h-8 text-primary-foreground" />
+            <BookOpen className="w-7 h-7 sm:w-8 sm:h-8 text-primary-foreground" />
           </motion.div>
-          <h1 className="font-display text-3xl font-bold gradient-text-primary">
+          <h1 className="font-display text-2xl sm:text-3xl font-bold gradient-text-primary">
             MindForge
           </h1>
-          <p className="text-muted-foreground mt-2">
+          <p className="text-muted-foreground mt-2 text-sm sm:text-base">
             {isLogin ? "Welcome back! Sign in to continue." : "Create your account to start learning."}
           </p>
         </div>
@@ -157,9 +157,9 @@ export default function Auth() {
         {/* Auth Form */}
         <motion.div
           layout
-          className="glass-card-elevated p-8"
+          className="glass-card-elevated p-6 sm:p-8"
         >
-          <form onSubmit={handleSubmit} className="space-y-5">
+          <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
             {!isLogin && (
               <motion.div
                 initial={{ opacity: 0, height: 0 }}
@@ -176,7 +176,7 @@ export default function Auth() {
                     placeholder="John Doe"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    className="pl-10 h-12 bg-background/50"
+                    className="pl-10 h-11 sm:h-12 bg-background/50"
                   />
                 </div>
                 {errors.name && (
@@ -195,7 +195,7 @@ export default function Auth() {
                   placeholder="you@example.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="pl-10 h-12 bg-background/50"
+                  className="pl-10 h-11 sm:h-12 bg-background/50"
                 />
               </div>
               {errors.email && (
@@ -213,7 +213,7 @@ export default function Auth() {
                   placeholder="••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="pl-10 h-12 bg-background/50"
+                  className="pl-10 h-11 sm:h-12 bg-background/50"
                 />
               </div>
               {errors.password && (
@@ -224,7 +224,7 @@ export default function Auth() {
             <Button
               type="submit"
               disabled={isLoading}
-              className="w-full h-12 gradient-bg-primary text-primary-foreground text-lg glow-primary hover:scale-[1.02] transition-transform"
+              className="w-full h-11 sm:h-12 gradient-bg-primary text-primary-foreground text-base sm:text-lg glow-primary hover:scale-[1.02] transition-transform min-h-[44px]"
             >
               {isLoading ? (
                 <Loader2 className="w-5 h-5 animate-spin" />
@@ -244,7 +244,7 @@ export default function Auth() {
                 setIsLogin(!isLogin);
                 setErrors({});
               }}
-              className="text-sm text-muted-foreground hover:text-primary transition-colors"
+              className="text-sm text-muted-foreground hover:text-primary transition-colors min-h-[44px] px-4"
             >
               {isLogin
                 ? "Don't have an account? Sign up"
@@ -257,7 +257,7 @@ export default function Auth() {
         <div className="text-center mt-6">
           <button
             onClick={() => navigate("/")}
-            className="text-sm text-muted-foreground hover:text-primary transition-colors"
+            className="text-sm text-muted-foreground hover:text-primary transition-colors min-h-[44px] px-4"
           >
             ← Back to home
           </button>
