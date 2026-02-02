@@ -9,7 +9,9 @@ import {
   XCircle,
   AlertCircle,
   BookOpen,
-  Target
+  Target,
+  Lightbulb,
+  ArrowLeft
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -182,7 +184,7 @@ export default function Learn() {
     } else {
       setPhase("quiz");
       toast({
-        title: "Section Complete! 🎉",
+        title: "Section Complete!",
         description: "Now let's test your understanding with a quick quiz.",
       });
     }
@@ -229,10 +231,10 @@ export default function Learn() {
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
           exit={{ opacity: 0, x: -20 }}
-          className="space-y-6"
+          className="space-y-4 sm:space-y-6"
         >
           {/* Chunk Content */}
-          <div className="glass-card p-8">
+          <div className="glass-card p-5 sm:p-8">
             <div className="prose prose-invert max-w-none">
               {currentChunk.content.split("\n\n").map((paragraph, idx) => {
                 let content = paragraph;
@@ -245,7 +247,7 @@ export default function Learn() {
                 return (
                   <p
                     key={idx}
-                    className="text-foreground/90 leading-relaxed mb-4"
+                    className="text-foreground/90 leading-relaxed mb-4 text-sm sm:text-base"
                     dangerouslySetInnerHTML={{ __html: content }}
                   />
                 );
@@ -254,21 +256,22 @@ export default function Learn() {
           </div>
 
           {/* Navigation */}
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between gap-3">
             <Button
               variant="outline"
               onClick={handlePrevChunk}
               disabled={currentChunkIndex === 0}
+              className="min-h-[44px]"
             >
-              <ChevronLeft className="w-4 h-4 mr-2" />
-              Previous
+              <ChevronLeft className="w-4 h-4 mr-1 sm:mr-2" />
+              <span className="hidden sm:inline">Previous</span>
             </Button>
             <Button
               onClick={handleNextChunk}
-              className="gradient-bg-primary text-primary-foreground"
+              className="gradient-bg-primary text-primary-foreground min-h-[44px]"
             >
-              {currentChunkIndex === mockChunks.length - 1 ? "Take Quiz" : "Next Chunk"}
-              <ChevronRight className="w-4 h-4 ml-2" />
+              {currentChunkIndex === mockChunks.length - 1 ? "Take Quiz" : "Next"}
+              <ChevronRight className="w-4 h-4 ml-1 sm:ml-2" />
             </Button>
           </div>
         </motion.div>
@@ -282,13 +285,13 @@ export default function Learn() {
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
           exit={{ opacity: 0, x: -20 }}
-          className="space-y-6"
+          className="space-y-4 sm:space-y-6"
         >
           {/* Question */}
-          <div className="glass-card p-8">
-            <h3 className="text-xl font-semibold mb-6">{currentQuestion.question}</h3>
+          <div className="glass-card p-5 sm:p-8">
+            <h3 className="text-lg sm:text-xl font-semibold mb-4 sm:mb-6">{currentQuestion.question}</h3>
             
-            <div className="space-y-3">
+            <div className="space-y-2 sm:space-y-3">
               {currentQuestion.options.map((option, index) => {
                 const isSelected = selectedAnswer === index;
                 const isCorrect = index === currentQuestion.correctAnswer;
@@ -300,7 +303,7 @@ export default function Learn() {
                     onClick={() => handleAnswerSelect(index)}
                     disabled={showExplanation}
                     className={cn(
-                      "w-full p-4 text-left rounded-lg border-2 transition-all",
+                      "w-full p-3 sm:p-4 text-left rounded-lg border-2 transition-all min-h-[48px]",
                       !showResult && isSelected && "border-primary bg-primary/10",
                       !showResult && !isSelected && "border-border hover:border-primary/50 hover:bg-muted/50",
                       showResult && isCorrect && "border-success bg-success/10",
@@ -310,21 +313,21 @@ export default function Learn() {
                   >
                     <div className="flex items-center gap-3">
                       <div className={cn(
-                        "w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium",
+                        "w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-xs sm:text-sm font-medium flex-shrink-0",
                         !showResult && isSelected && "bg-primary text-primary-foreground",
                         !showResult && !isSelected && "bg-muted text-muted-foreground",
                         showResult && isCorrect && "bg-success text-success-foreground",
                         showResult && isSelected && !isCorrect && "bg-destructive text-destructive-foreground"
                       )}>
                         {showResult ? (
-                          isCorrect ? <CheckCircle className="w-5 h-5" /> : 
-                          isSelected ? <XCircle className="w-5 h-5" /> : 
+                          isCorrect ? <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5" /> : 
+                          isSelected ? <XCircle className="w-4 h-4 sm:w-5 sm:h-5" /> : 
                           String.fromCharCode(65 + index)
                         ) : (
                           String.fromCharCode(65 + index)
                         )}
                       </div>
-                      <span>{option}</span>
+                      <span className="text-sm sm:text-base">{option}</span>
                     </div>
                   </button>
                 );
@@ -336,13 +339,13 @@ export default function Learn() {
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="mt-6 p-4 rounded-lg bg-muted/50 border border-border"
+                className="mt-4 sm:mt-6 p-3 sm:p-4 rounded-lg bg-muted/50 border border-border"
               >
                 <div className="flex items-start gap-3">
-                  <AlertCircle className="w-5 h-5 text-primary mt-0.5" />
+                  <Lightbulb className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
                   <div>
-                    <p className="font-medium mb-1">Explanation</p>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="font-medium mb-1 text-sm sm:text-base">Explanation</p>
+                    <p className="text-xs sm:text-sm text-muted-foreground">
                       {currentQuestion.explanation}
                     </p>
                   </div>
@@ -356,14 +359,14 @@ export default function Learn() {
             <Button
               onClick={handleSubmitAnswer}
               disabled={selectedAnswer === null}
-              className="w-full h-12 gradient-bg-primary text-primary-foreground"
+              className="w-full h-11 sm:h-12 gradient-bg-primary text-primary-foreground"
             >
               Submit Answer
             </Button>
           ) : (
             <Button
               onClick={handleNextQuestion}
-              className="w-full h-12 gradient-bg-primary text-primary-foreground"
+              className="w-full h-11 sm:h-12 gradient-bg-primary text-primary-foreground"
             >
               {currentQuestionIndex === mockQuestions.length - 1 ? "See Results" : "Next Question"}
               <ChevronRight className="w-4 h-4 ml-2" />
@@ -378,15 +381,15 @@ export default function Learn() {
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="glass-card-elevated p-8 text-center"
+          className="glass-card-elevated p-6 sm:p-8 text-center"
         >
           <div className={cn(
-            "w-24 h-24 rounded-full mx-auto mb-6 flex items-center justify-center",
+            "w-20 h-20 sm:w-24 sm:h-24 rounded-full mx-auto mb-4 sm:mb-6 flex items-center justify-center",
             scorePercentage >= 80 ? "bg-success/20" : 
             scorePercentage >= 60 ? "bg-warning/20" : "bg-destructive/20"
           )}>
             <span className={cn(
-              "text-4xl font-bold",
+              "text-3xl sm:text-4xl font-bold",
               scorePercentage >= 80 ? "text-success" : 
               scorePercentage >= 60 ? "text-warning" : "text-destructive"
             )}>
@@ -394,21 +397,26 @@ export default function Learn() {
             </span>
           </div>
 
-          <h2 className="font-display text-2xl font-bold mb-2">
-            {scorePercentage >= 80 ? "Excellent! 🎉" : 
-             scorePercentage >= 60 ? "Good job! 👍" : "Keep practicing! 💪"}
+          <h2 className="font-display text-xl sm:text-2xl font-bold mb-2 flex items-center justify-center gap-2">
+            {scorePercentage >= 80 ? (
+              <>Excellent! <CheckCircle className="w-6 h-6 text-success" /></>
+            ) : scorePercentage >= 60 ? (
+              <>Good job! <Target className="w-6 h-6 text-warning" /></>
+            ) : (
+              <>Keep practicing! <AlertCircle className="w-6 h-6 text-destructive" /></>
+            )}
           </h2>
-          <p className="text-muted-foreground mb-6">
+          <p className="text-muted-foreground mb-4 sm:mb-6 text-sm sm:text-base">
             You got {score} out of {mockQuestions.length} questions correct.
           </p>
 
           {/* Adaptive feedback */}
-          <div className="glass-card p-4 mb-6 text-left">
+          <div className="glass-card p-4 mb-4 sm:mb-6 text-left">
             <div className="flex items-start gap-3">
-              <Target className="w-5 h-5 text-primary mt-0.5" />
+              <Target className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
               <div>
-                <p className="font-medium mb-1">Adaptive Learning Update</p>
-                <p className="text-sm text-muted-foreground">
+                <p className="font-medium mb-1 text-sm sm:text-base">Adaptive Learning Update</p>
+                <p className="text-xs sm:text-sm text-muted-foreground">
                   {scorePercentage >= 80 
                     ? "Great performance! Next section will use larger chunks to challenge you more."
                     : scorePercentage >= 60 
@@ -419,11 +427,11 @@ export default function Learn() {
             </div>
           </div>
 
-          <div className="flex gap-4">
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
             <Button
               variant="outline"
               onClick={() => navigate("/dashboard")}
-              className="flex-1"
+              className="flex-1 min-h-[44px]"
             >
               Back to Dashboard
             </Button>
@@ -436,7 +444,7 @@ export default function Learn() {
                 setSelectedAnswer(null);
                 setShowExplanation(false);
               }}
-              className="flex-1 gradient-bg-primary text-primary-foreground"
+              className="flex-1 gradient-bg-primary text-primary-foreground min-h-[44px]"
             >
               Study Again
             </Button>
@@ -448,46 +456,50 @@ export default function Learn() {
 
   return (
     <AppLayout user={mockUser}>
-      <div className="container mx-auto px-4 py-8 max-w-3xl">
+      <div className="container mx-auto px-4 py-6 sm:py-8 max-w-3xl">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-6"
+          className="mb-4 sm:mb-6"
         >
           <div className="flex items-center justify-between mb-4">
             <Button
               variant="ghost"
               onClick={() => navigate("/dashboard")}
-              className="text-muted-foreground"
+              className="text-muted-foreground min-h-[44px]"
             >
-              <ChevronLeft className="w-4 h-4 mr-2" />
-              Back
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              <span className="hidden sm:inline">Back</span>
             </Button>
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <div className="flex items-center gap-2 text-muted-foreground text-sm">
               <Clock className="w-4 h-4" />
               <span>{formatTime(timeSpent)}</span>
             </div>
           </div>
 
-          {phase !== "results" && (
-            <>
-              <div className="flex items-center justify-between mb-2">
-                <h2 className="font-semibold">
-                  {phase === "study" ? "Newton's Laws of Motion" : "Section Quiz"}
-                </h2>
-                <span className="text-sm text-muted-foreground">
-                  {phase === "study" 
-                    ? `Chunk ${currentChunkIndex + 1} of ${mockChunks.length}`
-                    : `Question ${currentQuestionIndex + 1} of ${mockQuestions.length}`}
-                </span>
-              </div>
-              <Progress value={progress} className="h-2" />
-            </>
-          )}
+          <div className="flex items-center gap-3 mb-4">
+            <div className="p-2 rounded-lg gradient-bg-primary">
+              <BookOpen className="w-5 h-5 text-primary-foreground" />
+            </div>
+            <div>
+              <h1 className="font-display text-lg sm:text-xl font-bold">
+                Newton's Laws of Motion
+              </h1>
+              <p className="text-xs sm:text-sm text-muted-foreground">
+                {phase === "study" 
+                  ? `Chunk ${currentChunkIndex + 1} of ${mockChunks.length}`
+                  : phase === "quiz"
+                  ? `Question ${currentQuestionIndex + 1} of ${mockQuestions.length}`
+                  : "Results"}
+              </p>
+            </div>
+          </div>
+
+          <Progress value={progress} className="h-2" />
         </motion.div>
 
-        {/* Main Content */}
+        {/* Content */}
         <AnimatePresence mode="wait">
           {renderContent()}
         </AnimatePresence>

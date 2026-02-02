@@ -10,8 +10,7 @@ import {
   Gamepad2,
   ArrowRight,
   Target,
-  TrendingUp,
-  Bell
+  AlertCircle
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AppLayout } from "@/components/layout/AppLayout";
@@ -33,31 +32,31 @@ const mockUser = {
 };
 
 const mockActiveDays = [
-  "2025-01-28", "2025-01-29", "2025-01-30", "2025-01-31", "2025-02-01",
-  "2025-01-25", "2025-01-26", "2025-01-20", "2025-01-21", "2025-01-22",
-  "2025-01-15", "2025-01-16", "2025-01-17",
+  "2026-01-28", "2026-01-29", "2026-01-30", "2026-01-31", "2026-02-01",
+  "2026-01-25", "2026-01-26", "2026-01-20", "2026-01-21", "2026-01-22",
+  "2026-01-15", "2026-01-16", "2026-01-17",
 ];
 
 const mockCourses = [
-  { id: "1", title: "Introduction to Machine Learning", sectionsCompleted: 8, totalSections: 12, lastAccessed: "2 hours ago" },
-  { id: "2", title: "Advanced JavaScript Patterns", sectionsCompleted: 5, totalSections: 10, lastAccessed: "Yesterday" },
+  { id: "1", title: "Introduction to Physics", sectionsCompleted: 8, totalSections: 12, lastAccessed: "2 hours ago" },
+  { id: "2", title: "Advanced Mathematics", sectionsCompleted: 5, totalSections: 10, lastAccessed: "Yesterday" },
   { id: "3", title: "Data Structures & Algorithms", sectionsCompleted: 15, totalSections: 15, lastAccessed: "3 days ago" },
 ];
 
 const mockBadges: Badge[] = [
-  { id: "1", name: "Week Warrior", description: "Achieved a 7-day learning streak", icon: "🔥", isEarned: true, earnedAt: "2025-01-25" },
-  { id: "2", name: "Getting Started", description: "Completed your first section", icon: "🎓", isEarned: true, earnedAt: "2025-01-15" },
-  { id: "3", name: "Finisher", description: "Completed an entire course", icon: "🏆", isEarned: true, earnedAt: "2025-01-30" },
-  { id: "4", name: "Ace", description: "Got 100% on any test", icon: "⭐", isEarned: true, earnedAt: "2025-01-28" },
-  { id: "5", name: "Knowledge Builder", description: "Completed 10 sections", icon: "🧠", isEarned: true, earnedAt: "2025-01-27" },
+  { id: "1", name: "Week Warrior", description: "Achieved a 7-day learning streak", icon: "🔥", isEarned: true, earnedAt: "2026-01-25" },
+  { id: "2", name: "Getting Started", description: "Completed your first section", icon: "🎓", isEarned: true, earnedAt: "2026-01-15" },
+  { id: "3", name: "Finisher", description: "Completed an entire course", icon: "🏆", isEarned: true, earnedAt: "2026-01-30" },
+  { id: "4", name: "Ace", description: "Got 100% on any test", icon: "⭐", isEarned: true, earnedAt: "2026-01-28" },
+  { id: "5", name: "Knowledge Builder", description: "Completed 10 sections", icon: "🧠", isEarned: true, earnedAt: "2026-01-27" },
   { id: "6", name: "Month Master", description: "Achieved a 30-day streak", icon: "🌟", isEarned: false },
   { id: "7", name: "Century Champion", description: "Achieved a 100-day streak", icon: "👑", isEarned: false },
 ];
 
 const mockDifficultTerms = [
-  { id: "1", term: "Gradient Descent", definition: "An optimization algorithm used to minimize the loss function in machine learning models.", reviewCount: 4 },
-  { id: "2", term: "Backpropagation", definition: "Algorithm for training neural networks by calculating gradients through the chain rule.", reviewCount: 3 },
-  { id: "3", term: "Overfitting", definition: "When a model learns training data too well, including noise, and fails to generalize.", reviewCount: 2 },
+  { id: "1", term: "Newton's Third Law", definition: "For every action, there is an equal and opposite reaction.", reviewCount: 4 },
+  { id: "2", term: "Kinetic Energy", definition: "The energy possessed by an object due to its motion (KE = ½mv²).", reviewCount: 3 },
+  { id: "3", term: "Momentum", definition: "The product of mass and velocity of an object (p = mv).", reviewCount: 2 },
 ];
 
 const mockWeeklyData = [
@@ -110,7 +109,7 @@ export default function Dashboard() {
     if (mockDifficultTerms.length > 0) {
       setTimeout(() => {
         toast({
-          title: "📚 Terms to Review",
+          title: "Terms to Review",
           description: `You have ${mockDifficultTerms.length} terms that need practice today!`,
         });
       }, 1500);
@@ -135,23 +134,23 @@ export default function Dashboard() {
 
   return (
     <AppLayout user={user}>
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-6 sm:py-8">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-8"
+          className="mb-6 sm:mb-8"
         >
-          <h1 className="font-display text-3xl md:text-4xl font-bold mb-2">
+          <h1 className="font-display text-2xl sm:text-3xl md:text-4xl font-bold mb-2">
             Welcome back, <span className="gradient-text-primary">{user.name}</span>!
           </h1>
-          <p className="text-muted-foreground">
+          <p className="text-muted-foreground text-sm sm:text-base">
             You're doing great! Keep up the momentum.
           </p>
         </motion.div>
 
         {/* Quick Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6 sm:mb-8">
           <StatsCard
             title="Current Streak"
             value={`${user.streak} days`}
@@ -181,19 +180,19 @@ export default function Dashboard() {
           />
         </div>
 
-        <div className="grid lg:grid-cols-3 gap-8">
+        <div className="grid lg:grid-cols-3 gap-6 sm:gap-8">
           {/* Left Column */}
-          <div className="lg:col-span-2 space-y-8">
+          <div className="lg:col-span-2 space-y-6 sm:space-y-8">
             {/* Progress Overview */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className="glass-card p-6"
+              className="glass-card p-4 sm:p-6"
             >
-              <div className="flex items-start justify-between mb-6">
+              <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-6">
                 <div>
-                  <h2 className="font-semibold text-lg mb-1">Overall Progress</h2>
+                  <h2 className="font-semibold text-base sm:text-lg mb-1">Overall Progress</h2>
                   <p className="text-sm text-muted-foreground">
                     You're making excellent progress across all courses
                   </p>
@@ -206,10 +205,10 @@ export default function Dashboard() {
               </div>
 
               {/* Quick Actions */}
-              <div className="grid sm:grid-cols-3 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <Button
                   onClick={() => navigate("/learn")}
-                  className="h-12 gradient-bg-primary text-primary-foreground glow-primary"
+                  className="h-11 sm:h-12 gradient-bg-primary text-primary-foreground glow-primary"
                 >
                   <ArrowRight className="w-4 h-4 mr-2" />
                   Continue Learning
@@ -217,7 +216,7 @@ export default function Dashboard() {
                 <Button
                   onClick={() => navigate("/upload")}
                   variant="outline"
-                  className="h-12 border-primary/50 hover:bg-primary/10"
+                  className="h-11 sm:h-12 border-primary/50 hover:bg-primary/10"
                 >
                   <Upload className="w-4 h-4 mr-2" />
                   Upload Material
@@ -225,7 +224,7 @@ export default function Dashboard() {
                 <Button
                   onClick={() => navigate("/games")}
                   variant="outline"
-                  className="h-12 border-accent/50 hover:bg-accent/10"
+                  className="h-11 sm:h-12 border-accent/50 hover:bg-accent/10"
                 >
                   <Gamepad2 className="w-4 h-4 mr-2" />
                   Play Games
@@ -240,12 +239,12 @@ export default function Dashboard() {
               transition={{ delay: 0.3 }}
             >
               <div className="flex items-center justify-between mb-4">
-                <h2 className="font-semibold text-lg">Your Courses</h2>
+                <h2 className="font-semibold text-base sm:text-lg">Your Courses</h2>
                 <Button variant="ghost" size="sm" className="text-primary">
                   View All
                 </Button>
               </div>
-              <div className="grid sm:grid-cols-2 gap-4">
+              <div className="grid sm:grid-cols-2 gap-3 sm:gap-4">
                 {mockCourses.map((course, index) => (
                   <CourseCard
                     key={course.id}
@@ -262,27 +261,28 @@ export default function Dashboard() {
           </div>
 
           {/* Right Column */}
-          <div className="space-y-8">
+          <div className="space-y-6 sm:space-y-8">
             {/* Streak Calendar */}
             <motion.div
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.3 }}
-              className="glass-card p-6"
+              className="glass-card p-4 sm:p-6"
             >
               <div className="flex items-center gap-3 mb-4">
                 <div className="p-2 rounded-lg gradient-bg-accent">
                   <Flame className="w-5 h-5 text-accent-foreground" />
                 </div>
                 <div>
-                  <h2 className="font-semibold">Streak Calendar</h2>
-                  <p className="text-sm text-muted-foreground">Last 30 days</p>
+                  <h2 className="font-semibold text-sm sm:text-base">Streak Calendar</h2>
+                  <p className="text-xs sm:text-sm text-muted-foreground">Last 30 days</p>
                 </div>
               </div>
               <StreakCalendar activeDays={mockActiveDays} />
               <div className="mt-4 p-3 rounded-lg bg-accent/10 border border-accent/30">
-                <p className="text-sm text-center">
-                  🔥 <span className="font-semibold">{user.streak} day streak!</span> Keep it going!
+                <p className="text-sm text-center flex items-center justify-center gap-2">
+                  <Flame className="w-4 h-4 text-warning" />
+                  <span><span className="font-semibold">{user.streak} day streak!</span> Keep it going!</span>
                 </p>
               </div>
             </motion.div>
@@ -298,8 +298,8 @@ export default function Dashboard() {
                   <Target className="w-5 h-5 text-warning" />
                 </div>
                 <div>
-                  <h2 className="font-semibold">Terms to Review</h2>
-                  <p className="text-sm text-muted-foreground">Practice makes perfect</p>
+                  <h2 className="font-semibold text-sm sm:text-base">Terms to Review</h2>
+                  <p className="text-xs sm:text-sm text-muted-foreground">Practice makes perfect</p>
                 </div>
               </div>
               <DifficultTerms
@@ -313,14 +313,14 @@ export default function Dashboard() {
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.5 }}
-              className="glass-card p-6"
+              className="glass-card p-4 sm:p-6"
             >
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-3">
                   <div className="p-2 rounded-lg gradient-bg-primary">
                     <Trophy className="w-5 h-5 text-primary-foreground" />
                   </div>
-                  <h2 className="font-semibold">Achievements</h2>
+                  <h2 className="font-semibold text-sm sm:text-base">Achievements</h2>
                 </div>
                 <Button variant="ghost" size="sm" className="text-primary">
                   View All
