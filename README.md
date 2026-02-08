@@ -207,7 +207,7 @@ Contributions are welcome! Please:
 
 For questions or issues:
 - Open a GitHub issue
-- Demo: [https://mindforgee.lovable.app/](https://mindforgee.lovable.app/)
+- Demo: [https://studypadi.lovable.app/](https://studypadi.lovable.app/)
 
 ---
 
