@@ -10,7 +10,6 @@ import {
   Gamepad2,
   ArrowRight,
   Target,
-  AlertCircle
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AppLayout } from "@/components/layout/AppLayout";
@@ -18,62 +17,17 @@ import { ProgressRing } from "@/components/ui/progress-ring";
 import { StreakCalendar } from "@/components/ui/streak-calendar";
 import { StatsCard } from "@/components/dashboard/StatsCard";
 import { CourseCard } from "@/components/dashboard/CourseCard";
-import { BadgeGrid, Badge } from "@/components/dashboard/BadgeGrid";
+import { BadgeGrid } from "@/components/dashboard/BadgeGrid";
 import { DifficultTerms } from "@/components/dashboard/DifficultTerms";
 import { WeeklyChart } from "@/components/dashboard/WeeklyChart";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-
-// Mock data for demonstration
-const mockUser = {
-  name: "Alex Johnson",
-  avatar: "",
-  streak: 12,
-};
-
-const mockActiveDays = [
-  "2026-01-28", "2026-01-29", "2026-01-30", "2026-01-31", "2026-02-01",
-  "2026-01-25", "2026-01-26", "2026-01-20", "2026-01-21", "2026-01-22",
-  "2026-01-15", "2026-01-16", "2026-01-17",
-];
-
-const mockCourses = [
-  { id: "1", title: "Introduction to Physics", sectionsCompleted: 8, totalSections: 12, lastAccessed: "2 hours ago" },
-  { id: "2", title: "Advanced Mathematics", sectionsCompleted: 5, totalSections: 10, lastAccessed: "Yesterday" },
-  { id: "3", title: "Data Structures & Algorithms", sectionsCompleted: 15, totalSections: 15, lastAccessed: "3 days ago" },
-];
-
-const mockBadges: Badge[] = [
-  { id: "1", name: "Week Warrior", description: "Achieved a 7-day learning streak", icon: "🔥", isEarned: true, earnedAt: "2026-01-25" },
-  { id: "2", name: "Getting Started", description: "Completed your first section", icon: "🎓", isEarned: true, earnedAt: "2026-01-15" },
-  { id: "3", name: "Finisher", description: "Completed an entire course", icon: "🏆", isEarned: true, earnedAt: "2026-01-30" },
-  { id: "4", name: "Ace", description: "Got 100% on any test", icon: "⭐", isEarned: true, earnedAt: "2026-01-28" },
-  { id: "5", name: "Knowledge Builder", description: "Completed 10 sections", icon: "🧠", isEarned: true, earnedAt: "2026-01-27" },
-  { id: "6", name: "Month Master", description: "Achieved a 30-day streak", icon: "🌟", isEarned: false },
-  { id: "7", name: "Century Champion", description: "Achieved a 100-day streak", icon: "👑", isEarned: false },
-];
-
-const mockDifficultTerms = [
-  { id: "1", term: "Newton's Third Law", definition: "For every action, there is an equal and opposite reaction.", reviewCount: 4 },
-  { id: "2", term: "Kinetic Energy", definition: "The energy possessed by an object due to its motion (KE = ½mv²).", reviewCount: 3 },
-  { id: "3", term: "Momentum", definition: "The product of mass and velocity of an object (p = mv).", reviewCount: 2 },
-];
-
-const mockWeeklyData = [
-  { day: "Mon", minutes: 45 },
-  { day: "Tue", minutes: 30 },
-  { day: "Wed", minutes: 60 },
-  { day: "Thu", minutes: 25 },
-  { day: "Fri", minutes: 90 },
-  { day: "Sat", minutes: 40 },
-  { day: "Sun", minutes: 55 },
-];
+import { useDashboardData } from "@/hooks/useDashboardData";
 
 export default function Dashboard() {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [isLoading, setIsLoading] = useState(true);
-  const [user, setUser] = useState(mockUser);
+  const [userId, setUserId] = useState<string | null>(null);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -82,15 +36,7 @@ export default function Dashboard() {
         navigate("/auth?mode=login");
         return;
       }
-      
-      // Get user info
-      const displayName = session.user.user_metadata?.display_name || session.user.email?.split("@")[0] || "Learner";
-      setUser({
-        name: displayName,
-        avatar: session.user.user_metadata?.avatar_url || "",
-        streak: mockUser.streak, // Would come from database
-      });
-      setIsLoading(false);
+      setUserId(session.user.id);
     };
 
     checkAuth();
@@ -98,31 +44,48 @@ export default function Dashboard() {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (!session) {
         navigate("/auth?mode=login");
+      } else {
+        setUserId(session.user.id);
       }
     });
 
     return () => subscription.unsubscribe();
   }, [navigate]);
 
+  const { profile, courses, badges, difficultTerms, activeDays, isLoading } = useDashboardData(userId);
+
   useEffect(() => {
-    // Show terms reminder notification
-    if (mockDifficultTerms.length > 0) {
+    if (difficultTerms.length > 0 && !isLoading) {
       setTimeout(() => {
         toast({
           title: "Terms to Review",
-          description: `You have ${mockDifficultTerms.length} terms that need practice today!`,
+          description: `You have ${difficultTerms.length} terms that need practice today!`,
         });
       }, 1500);
     }
-  }, [toast]);
+  }, [difficultTerms.length, isLoading, toast]);
 
-  const overallProgress = Math.round(
-    (mockCourses.reduce((acc, c) => acc + c.sectionsCompleted, 0) /
-      mockCourses.reduce((acc, c) => acc + c.totalSections, 0)) *
-      100
-  );
+  const overallProgress = courses.length > 0
+    ? Math.round(
+        (courses.reduce((acc, c) => acc + c.sectionsCompleted, 0) /
+          Math.max(courses.reduce((acc, c) => acc + c.totalSections, 0), 1)) *
+          100
+      )
+    : 0;
 
-  const totalMinutes = mockWeeklyData.reduce((acc, d) => acc + d.minutes, 0);
+  // Placeholder weekly data — would need a study_sessions table for real tracking
+  const weeklyData = [
+    { day: "Mon", minutes: 0 },
+    { day: "Tue", minutes: 0 },
+    { day: "Wed", minutes: 0 },
+    { day: "Thu", minutes: 0 },
+    { day: "Fri", minutes: 0 },
+    { day: "Sat", minutes: 0 },
+    { day: "Sun", minutes: 0 },
+  ];
+  const totalMinutes = weeklyData.reduce((acc, d) => acc + d.minutes, 0);
+
+  const user = profile || { name: "Learner", avatar: "", streak: 0 };
 
   if (isLoading) {
     return (
@@ -145,7 +108,9 @@ export default function Dashboard() {
             Welcome back, <span className="gradient-text-primary">{user.name}</span>!
           </h1>
           <p className="text-muted-foreground text-sm sm:text-base">
-            You're doing great! Keep up the momentum.
+            {courses.length > 0
+              ? "You're doing great! Keep up the momentum."
+              : "Upload your first document to start learning!"}
           </p>
         </motion.div>
 
@@ -155,26 +120,25 @@ export default function Dashboard() {
             title="Current Streak"
             value={`${user.streak} days`}
             icon={Flame}
-            trend={{ value: 15, isPositive: true }}
             delay={0}
           />
           <StatsCard
             title="Weekly Study Time"
-            value={`${Math.floor(totalMinutes / 60)}h ${totalMinutes % 60}m`}
+            value={totalMinutes > 0 ? `${Math.floor(totalMinutes / 60)}h ${totalMinutes % 60}m` : "0m"}
             icon={Clock}
             delay={0.1}
           />
           <StatsCard
             title="Courses Active"
-            value={mockCourses.length}
-            subtitle={`${mockCourses.filter(c => c.sectionsCompleted === c.totalSections).length} completed`}
+            value={courses.length}
+            subtitle={`${courses.filter(c => c.sectionsCompleted === c.totalSections && c.totalSections > 0).length} completed`}
             icon={BookOpen}
             delay={0.2}
           />
           <StatsCard
             title="Badges Earned"
-            value={mockBadges.filter(b => b.isEarned).length}
-            subtitle={`of ${mockBadges.length} total`}
+            value={badges.filter(b => b.isEarned).length}
+            subtitle={badges.length > 0 ? `of ${badges.length} total` : undefined}
             icon={Trophy}
             delay={0.3}
           />
@@ -194,7 +158,9 @@ export default function Dashboard() {
                 <div>
                   <h2 className="font-semibold text-base sm:text-lg mb-1">Overall Progress</h2>
                   <p className="text-sm text-muted-foreground">
-                    You're making excellent progress across all courses
+                    {courses.length > 0
+                      ? "You're making excellent progress across all courses"
+                      : "Upload a document to begin your learning journey"}
                   </p>
                 </div>
                 <ProgressRing progress={overallProgress} size={80}>
@@ -240,24 +206,35 @@ export default function Dashboard() {
             >
               <div className="flex items-center justify-between mb-4">
                 <h2 className="font-semibold text-base sm:text-lg">Your Courses</h2>
-                <Button variant="ghost" size="sm" className="text-primary">
+                <Button variant="ghost" size="sm" className="text-primary" onClick={() => navigate("/learn")}>
                   View All
                 </Button>
               </div>
-              <div className="grid sm:grid-cols-2 gap-3 sm:gap-4">
-                {mockCourses.map((course, index) => (
-                  <CourseCard
-                    key={course.id}
-                    {...course}
-                    onClick={() => navigate(`/learn/${course.id}`)}
-                    delay={index * 0.1}
-                  />
-                ))}
-              </div>
+              {courses.length > 0 ? (
+                <div className="grid sm:grid-cols-2 gap-3 sm:gap-4">
+                  {courses.slice(0, 4).map((course, index) => (
+                    <CourseCard
+                      key={course.id}
+                      {...course}
+                      onClick={() => navigate(`/learn/${course.id}`)}
+                      delay={index * 0.1}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <div className="glass-card p-8 text-center">
+                  <BookOpen className="w-12 h-12 mx-auto text-muted-foreground mb-3" />
+                  <p className="text-muted-foreground mb-4">No courses yet. Upload a document to get started!</p>
+                  <Button onClick={() => navigate("/upload")} className="gradient-bg-primary text-primary-foreground">
+                    <Upload className="w-4 h-4 mr-2" />
+                    Upload Your First Document
+                  </Button>
+                </div>
+              )}
             </motion.div>
 
             {/* Weekly Chart */}
-            <WeeklyChart data={mockWeeklyData} />
+            <WeeklyChart data={weeklyData} />
           </div>
 
           {/* Right Column */}
@@ -278,11 +255,17 @@ export default function Dashboard() {
                   <p className="text-xs sm:text-sm text-muted-foreground">Last 30 days</p>
                 </div>
               </div>
-              <StreakCalendar activeDays={mockActiveDays} />
+              <StreakCalendar activeDays={activeDays} />
               <div className="mt-4 p-3 rounded-lg bg-accent/10 border border-accent/30">
                 <p className="text-sm text-center flex items-center justify-center gap-2">
                   <Flame className="w-4 h-4 text-warning" />
-                  <span><span className="font-semibold">{user.streak} day streak!</span> Keep it going!</span>
+                  <span>
+                    {user.streak > 0 ? (
+                      <><span className="font-semibold">{user.streak} day streak!</span> Keep it going!</>
+                    ) : (
+                      "Start your streak by learning today!"
+                    )}
+                  </span>
                 </p>
               </div>
             </motion.div>
@@ -303,31 +286,33 @@ export default function Dashboard() {
                 </div>
               </div>
               <DifficultTerms
-                terms={mockDifficultTerms}
+                terms={difficultTerms}
                 onPractice={(id) => navigate(`/games?term=${id}`)}
               />
             </motion.div>
 
             {/* Badges */}
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.5 }}
-              className="glass-card p-4 sm:p-6"
-            >
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-lg gradient-bg-primary">
-                    <Trophy className="w-5 h-5 text-primary-foreground" />
+            {badges.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.5 }}
+                className="glass-card p-4 sm:p-6"
+              >
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-lg gradient-bg-primary">
+                      <Trophy className="w-5 h-5 text-primary-foreground" />
+                    </div>
+                    <h2 className="font-semibold text-sm sm:text-base">Achievements</h2>
                   </div>
-                  <h2 className="font-semibold text-sm sm:text-base">Achievements</h2>
+                  <Button variant="ghost" size="sm" className="text-primary">
+                    View All
+                  </Button>
                 </div>
-                <Button variant="ghost" size="sm" className="text-primary">
-                  View All
-                </Button>
-              </div>
-              <BadgeGrid badges={mockBadges} />
-            </motion.div>
+                <BadgeGrid badges={badges} />
+              </motion.div>
+            )}
           </div>
         </div>
       </div>
