@@ -25,6 +25,12 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
 
+const mockUser = {
+  name: "Alex Johnson",
+  avatar: "",
+  streak: 12,
+};
+
 interface Section {
   id: string;
   title: string;
@@ -33,7 +39,6 @@ interface Section {
 }
 
 interface AnalysisResult {
-  documentId: string;
   title: string;
   sections: Section[];
   totalChunks: number;
@@ -55,8 +60,6 @@ export default function UploadPage() {
   const [analysisProgress, setAnalysisProgress] = useState(0);
   const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null);
   const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set());
-  const [userName, setUserName] = useState("Learner");
-  const [userStreak, setUserStreak] = useState(0);
   
   // Q&A Chat state
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
@@ -69,17 +72,6 @@ export default function UploadPage() {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) {
         navigate("/auth?mode=login");
-        return;
-      }
-      // Get profile
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("display_name, streak_count")
-        .eq("user_id", session.user.id)
-        .single();
-      if (profile) {
-        setUserName(profile.display_name || session.user.email?.split("@")[0] || "Learner");
-        setUserStreak(profile.streak_count || 0);
       }
     };
     checkAuth();
@@ -98,8 +90,11 @@ export default function UploadPage() {
   const handleDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault();
     setIsDragging(false);
+    
     const droppedFile = e.dataTransfer.files[0];
-    if (droppedFile) validateAndSetFile(droppedFile);
+    if (droppedFile) {
+      validateAndSetFile(droppedFile);
+    }
   }, []);
 
   const validateAndSetFile = (file: File) => {
@@ -110,106 +105,115 @@ export default function UploadPage() {
     ];
     
     if (!validTypes.includes(file.type)) {
-      toast({ title: "Invalid file type", description: "Please upload a PDF, DOCX, or TXT file.", variant: "destructive" });
+      toast({
+        title: "Invalid file type",
+        description: "Please upload a PDF, DOCX, or TXT file.",
+        variant: "destructive",
+      });
       return;
     }
-    if (file.size > 10 * 1024 * 1024) {
-      toast({ title: "File too large", description: "Please upload a file smaller than 10MB.", variant: "destructive" });
+
+    if (file.size > 10 * 1024 * 1024) { // 10MB limit
+      toast({
+        title: "File too large",
+        description: "Please upload a file smaller than 10MB.",
+        variant: "destructive",
+      });
       return;
     }
+
     setFile(file);
     setAnalysisResult(null);
   };
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
-    if (selectedFile) validateAndSetFile(selectedFile);
+    if (selectedFile) {
+      validateAndSetFile(selectedFile);
+    }
   };
 
-  const extractText = async (file: File): Promise<string> => {
-    if (file.type === "text/plain") {
-      return await file.text();
-    }
-    // For PDF and DOCX, read as text (basic extraction)
-    // In production you'd use pdf.js or mammoth.js, but for the hackathon
-    // we'll try reading as text and fall back
-    try {
-      const text = await file.text();
-      // Filter out binary garbage, keep readable text
-      const cleaned = text.replace(/[^\x20-\x7E\n\r\t]/g, " ").replace(/\s{3,}/g, " ").trim();
-      if (cleaned.length > 100) return cleaned;
-    } catch (e) {
-      console.error("Text extraction fallback failed:", e);
-    }
-    
-    // If we can't extract, provide a message
-    throw new Error("Could not extract text from this file. Please try a .txt file or copy-paste the content.");
-  };
-
-  const analyzeDocument = async () => {
-    if (!file) return;
-    
+  const simulateAnalysis = async () => {
     setIsAnalyzing(true);
     setAnalysisProgress(0);
 
+    // Simulate analysis progress
     const progressInterval = setInterval(() => {
       setAnalysisProgress((prev) => {
-        if (prev >= 90) { clearInterval(progressInterval); return prev; }
-        return prev + Math.random() * 12;
+        if (prev >= 95) {
+          clearInterval(progressInterval);
+          return prev;
+        }
+        return prev + Math.random() * 15;
       });
-    }, 600);
+    }, 500);
 
-    try {
-      const text = await extractText(file);
-      setAnalysisProgress(30);
+    // Simulate AI processing delay
+    await new Promise((resolve) => setTimeout(resolve, 3000));
+    
+    clearInterval(progressInterval);
+    setAnalysisProgress(100);
 
-      const { data, error } = await supabase.functions.invoke("process-document", {
-        body: { text, filename: file.name },
-      });
+    // Mock analysis result
+    const result: AnalysisResult = {
+      title: file?.name.replace(/\.[^/.]+$/, "") || "Document",
+      sections: [
+        {
+          id: "1",
+          title: "Introduction and Overview",
+          chunks: [
+            { id: "1-1", wordCount: 250 },
+            { id: "1-2", wordCount: 320 },
+          ],
+        },
+        {
+          id: "2",
+          title: "Core Concepts",
+          chunks: [
+            { id: "2-1", wordCount: 280 },
+            { id: "2-2", wordCount: 350 },
+            { id: "2-3", wordCount: 200 },
+          ],
+        },
+        {
+          id: "3",
+          title: "Advanced Topics",
+          chunks: [
+            { id: "3-1", wordCount: 400 },
+            { id: "3-2", wordCount: 280 },
+          ],
+        },
+        {
+          id: "4",
+          title: "Practical Applications",
+          chunks: [
+            { id: "4-1", wordCount: 350 },
+            { id: "4-2", wordCount: 300 },
+            { id: "4-3", wordCount: 420 },
+          ],
+        },
+        {
+          id: "5",
+          title: "Summary and Conclusions",
+          chunks: [
+            { id: "5-1", wordCount: 180 },
+          ],
+        },
+      ],
+      totalChunks: 11,
+      questionsGenerated: 18,
+    };
 
-      clearInterval(progressInterval);
+    setAnalysisResult(result);
+    setIsAnalyzing(false);
 
-      if (error) {
-        throw new Error(error.message || "Analysis failed");
-      }
-
-      if (data?.error) {
-        throw new Error(data.error);
-      }
-
-      setAnalysisProgress(100);
-
-      const result: AnalysisResult = {
-        documentId: data.documentId,
-        title: data.title,
-        sections: data.sections.map((s: any) => ({
-          id: s.id,
-          title: s.title,
-          chunks: s.chunks || [],
-        })),
-        totalChunks: data.totalChunks,
-        questionsGenerated: data.questionsGenerated,
-      };
-
-      setAnalysisResult(result);
-
-      toast({
-        title: "Analysis complete!",
-        description: `${result.sections.length} sections and ${result.totalChunks} chunks created with ${result.questionsGenerated} quiz questions.`,
-      });
-    } catch (error: any) {
-      console.error("Analysis error:", error);
-      toast({
-        title: "Analysis failed",
-        description: error.message || "Something went wrong. Please try again.",
-        variant: "destructive",
-      });
-    } finally {
-      clearInterval(progressInterval);
-      setIsAnalyzing(false);
-    }
+    toast({
+      title: "Analysis complete!",
+      description: `${result.sections.length} sections and ${result.totalChunks} chunks created.`,
+    });
   };
 
+  // Scroll chat to bottom when new messages arrive
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [chatMessages]);
@@ -228,6 +232,7 @@ export default function UploadPage() {
     setIsAskingQuestion(true);
     
     try {
+      // Call the edge function for Q&A
       const { data, error } = await supabase.functions.invoke("document-qa", {
         body: {
           question: userMessage.content,
@@ -241,17 +246,18 @@ export default function UploadPage() {
       const assistantMessage: ChatMessage = {
         id: (Date.now() + 1).toString(),
         role: "assistant",
-        content: data?.answer || "I couldn't find an answer. Please try rephrasing.",
+        content: data?.answer || "I couldn't find an answer to that question. Please try rephrasing or ask something else about the document.",
       };
       
       setChatMessages((prev) => [...prev, assistantMessage]);
     } catch (error) {
       console.error("Q&A error:", error);
-      setChatMessages((prev) => [...prev, {
+      const errorMessage: ChatMessage = {
         id: (Date.now() + 1).toString(),
         role: "assistant",
-        content: "Sorry, I couldn't process your question. Please try again.",
-      }]);
+        content: "Sorry, I couldn't process your question. Please try again later.",
+      };
+      setChatMessages((prev) => [...prev, errorMessage]);
     } finally {
       setIsAskingQuestion(false);
     }
@@ -260,22 +266,26 @@ export default function UploadPage() {
   const toggleSection = (sectionId: string) => {
     setExpandedSections((prev) => {
       const next = new Set(prev);
-      if (next.has(sectionId)) next.delete(sectionId);
-      else next.add(sectionId);
+      if (next.has(sectionId)) {
+        next.delete(sectionId);
+      } else {
+        next.add(sectionId);
+      }
       return next;
     });
   };
 
   const getFileIcon = () => {
     if (!file) return <UploadIcon className="w-10 h-10 sm:w-12 sm:h-12 text-primary" />;
-    if (file.type === "application/pdf") return <FileText className="w-10 h-10 sm:w-12 sm:h-12 text-destructive" />;
+    
+    if (file.type === "application/pdf") {
+      return <FileText className="w-10 h-10 sm:w-12 sm:h-12 text-destructive" />;
+    }
     return <File className="w-10 h-10 sm:w-12 sm:h-12 text-primary" />;
   };
 
-  const user = { name: userName, avatar: "", streak: userStreak };
-
   return (
-    <AppLayout user={user}>
+    <AppLayout user={mockUser}>
       <div className="container mx-auto px-4 py-6 sm:py-8 max-w-4xl">
         {/* Header */}
         <motion.div
@@ -317,7 +327,10 @@ export default function UploadPage() {
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={() => { setFile(null); setAnalysisResult(null); }}
+                  onClick={() => {
+                    setFile(null);
+                    setAnalysisResult(null);
+                  }}
                   className="mt-4 text-muted-foreground hover:text-destructive min-h-[44px]"
                 >
                   <X className="w-4 h-4 mr-2" />
@@ -362,14 +375,14 @@ export default function UploadPage() {
             className="mt-6"
           >
             <Button
-              onClick={analyzeDocument}
+              onClick={simulateAnalysis}
               disabled={isAnalyzing}
               className="w-full h-12 sm:h-14 gradient-bg-primary text-primary-foreground text-base sm:text-lg glow-primary"
             >
               {isAnalyzing ? (
                 <>
                   <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                  Analyzing your document with AI...
+                  Analyzing your document...
                 </>
               ) : (
                 <>
@@ -383,7 +396,7 @@ export default function UploadPage() {
               <div className="mt-4">
                 <Progress value={analysisProgress} className="h-2" />
                 <p className="text-xs sm:text-sm text-muted-foreground text-center mt-2">
-                  AI is extracting content and generating quiz questions...
+                  Extracting content and generating quiz questions...
                 </p>
               </div>
             )}
@@ -451,12 +464,15 @@ export default function UploadPage() {
                           >
                             <div className="p-3 sm:p-4 pl-8 sm:pl-12 space-y-2 bg-muted/30">
                               {section.chunks.map((chunk, index) => (
-                                <div key={chunk.id} className="flex items-center gap-2 sm:gap-3 text-xs sm:text-sm">
+                                <div
+                                  key={chunk.id}
+                                  className="flex items-center gap-2 sm:gap-3 text-xs sm:text-sm"
+                                >
                                   <FileText className="w-4 h-4 text-muted-foreground flex-shrink-0" />
                                   <span>Chunk {index + 1}</span>
-                                  {chunk.wordCount > 0 && (
-                                    <span className="text-muted-foreground">({chunk.wordCount} words)</span>
-                                  )}
+                                  <span className="text-muted-foreground">
+                                    ({chunk.wordCount} words)
+                                  </span>
                                 </div>
                               ))}
                             </div>
@@ -475,6 +491,7 @@ export default function UploadPage() {
                   Ask Questions About Your Document
                 </h3>
                 
+                {/* Chat Messages */}
                 <div className="max-h-48 sm:max-h-64 overflow-y-auto mb-4 space-y-3">
                   {chatMessages.length === 0 ? (
                     <div className="text-center py-4 px-2">
@@ -489,7 +506,9 @@ export default function UploadPage() {
                         key={msg.id}
                         className={cn(
                           "p-3 rounded-lg text-sm",
-                          msg.role === "user" ? "bg-primary/10 ml-4 sm:ml-8" : "bg-muted/50 mr-4 sm:mr-8"
+                          msg.role === "user"
+                            ? "bg-primary/10 ml-4 sm:ml-8"
+                            : "bg-muted/50 mr-4 sm:mr-8"
                         )}
                       >
                         <p className="font-medium text-xs mb-1 text-muted-foreground">
@@ -511,6 +530,7 @@ export default function UploadPage() {
                   <div ref={chatEndRef} />
                 </div>
                 
+                {/* Chat Input */}
                 <div className="flex gap-2">
                   <Input
                     value={chatInput}
@@ -533,7 +553,7 @@ export default function UploadPage() {
 
               {/* Start Learning Button */}
               <Button
-                onClick={() => navigate(`/learn/${analysisResult.documentId}`)}
+                onClick={() => navigate("/learn")}
                 className="w-full h-12 sm:h-14 gradient-bg-primary text-primary-foreground text-base sm:text-lg glow-primary"
               >
                 <BookOpen className="w-5 h-5 mr-2" />

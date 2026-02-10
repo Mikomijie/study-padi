@@ -2,6 +2,3 @@ project_id = "rfgremkrvletqcjoizwg"
 
 [functions.document-qa]
 verify_jwt = false
-
-[functions.process-document]
-verify_jwt = false
