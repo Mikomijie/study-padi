@@ -132,7 +132,13 @@ export default function UploadPage() {
         body: { text, filename: file.name },
       });
 
-      if (error) throw error;
+      if (error) {
+        // supabase functions.invoke wraps non-2xx as FunctionsHttpError
+        const message = typeof error === 'object' && 'message' in error 
+          ? error.message 
+          : String(error);
+        throw new Error(message || 'Failed to process document');
+      }
       if (data?.error) throw new Error(data.error);
 
       setAnalysisProgress(85);
